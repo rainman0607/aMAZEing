@@ -12,9 +12,15 @@ class Maze:
         self.entry = self._set_cell_state()
         self.exit = self._set_cell_state(self.entry)
 
-    def _set_cell_state(self, used=None):
+    def get_distance(self, x, y):
+        h = abs(x[1]-x[0])
+        v = abs(y[0]-y[1])
+        return h+v
+
+
+    def _set_cell_state(self, used=[0,0]):
         state = used
-        while state == used:
+        while state == used and self.get_distance(state, used) <= self.cell_width*2:
             side = random.randint(0, 3)
 
             if side == 0:  # north
@@ -92,10 +98,11 @@ class Maze:
             for y in range(self.height):
                 if self.cells[x][y].is_entry:
                     print("Start = (X: %s Y: %s)" % (y * self.cell_width, x * self.cell_width))
-                    draw.text((y * self.cell_width, x * self.cell_width), text="X", fill="green")
+                    draw.rectangle((y * self.cell_width-1, x * self.cell_width-2, (y+1) * self.cell_width-1, (x+1) * self.cell_width-1), fill="green")
                 elif self.cells[x][y].is_exit:
                     print("End = (X: %s Y: %s)" % (y * self.cell_width, x * self.cell_width))
-                    draw.text((y * self.cell_width, x * self.cell_width), text="X", fill="red")
+                    draw.rectangle((y * self.cell_width - 1, x * self.cell_width - 2, (y + 1) * self.cell_width - 1,
+                                    (x + 1) * self.cell_width - 1), fill="red")
 
                 if self.cells[x][y].north:
                     draw.line(
@@ -111,11 +118,10 @@ class Maze:
                     draw.line(
                         (x * self.cell_width, y * self.cell_width, x * self.cell_width, (y + 1) * self.cell_width),
                         fill="black", width=5)
-
         im.show()
 
 
 if __name__ == '__main__':
-    maze = Maze(width=30, height=30)
+    maze = Maze(width=20, height=20, cell_width=20)
     maze.generate()
     maze.draw()
