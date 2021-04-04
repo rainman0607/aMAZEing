@@ -1,4 +1,4 @@
-import random
+from random import randint, choice
 from Cell import Cell
 from PIL import Image, ImageDraw
 
@@ -13,24 +13,23 @@ class Maze:
         self.exit = self._set_cell_state(self.entry)
 
     def get_distance(self, x, y):
-        h = abs(x[1]-x[0])
-        v = abs(y[0]-y[1])
-        return h+v
+        h = abs(x[1] - x[0])
+        v = abs(y[0] - y[1])
+        return h + v
 
-
-    def _set_cell_state(self, used=[0,0]):
+    def _set_cell_state(self, used=[0, 0]):
         state = used
-        while state == used and self.get_distance(state, used) <= self.cell_width*2:
-            side = random.randint(0, 3)
+        while state == used and self.get_distance(state, used) <= self.cell_width * 2:
+            side = randint(0, 3)
 
             if side == 0:  # north
-                state = (0, random.randint(0, self.width - 1))
+                state = (0, randint(0, self.width - 1))
             elif side == 1:  # south
-                state = (random.randint(0, self.height - 1), self.width - 1)
+                state = (randint(0, self.height - 1), self.width - 1)
             elif side == 2:  # east
-                state = (self.height - 1, random.randint(0, self.width - 1))
+                state = (self.height - 1, randint(0, self.width - 1))
             elif side == 3:  # west
-                state = (random.randint(0, self.height - 1), 0)
+                state = (randint(0, self.height - 1), 0)
         return state
 
     def generate(self):
@@ -40,7 +39,7 @@ class Maze:
             for j in range(self.width):
                 self.cells[i].append(Cell(i, j))
 
-        x, y = random.choice(range(self.width)), random.choice(range(self.height))
+        x, y = choice(range(self.width)), choice(range(self.height))
         self.cells[x][y].visited = True
         path = [(x, y)]
 
@@ -58,7 +57,7 @@ class Maze:
                 good_adj_cells.append('west')
 
             if good_adj_cells:
-                go = random.choice(good_adj_cells)
+                go = choice(good_adj_cells)
                 if go == 'north':
                     self.cells[x][y].north = False
                     self.cells[x][y - 1].south = False
@@ -98,11 +97,12 @@ class Maze:
             for y in range(self.height):
                 if self.cells[x][y].is_entry:
                     print("Start = (X: %s Y: %s)" % (y * self.cell_width, x * self.cell_width))
-                    draw.rectangle((y * self.cell_width-1, x * self.cell_width-2, (y+1) * self.cell_width-1, (x+1) * self.cell_width-1), fill="green")
+                    draw.rectangle((y * self.cell_width - 2, x * self.cell_width - 2, (y + 1) * self.cell_width - 2,
+                                    (x + 1) * self.cell_width - 2), fill="green")
                 elif self.cells[x][y].is_exit:
                     print("End = (X: %s Y: %s)" % (y * self.cell_width, x * self.cell_width))
-                    draw.rectangle((y * self.cell_width - 1, x * self.cell_width - 2, (y + 1) * self.cell_width - 1,
-                                    (x + 1) * self.cell_width - 1), fill="red")
+                    draw.rectangle((y * self.cell_width - 2, x * self.cell_width - 2, (y + 1) * self.cell_width - 2,
+                                    (x + 1) * self.cell_width - 2), fill="red")
 
                 if self.cells[x][y].north:
                     draw.line(
